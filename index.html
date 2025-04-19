@@ -2,85 +2,199 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>VulneraScan</title>
-
-  <!-- ✅ Favicon (Lock Icon) -->
+  <title>How Secure is Your Password?</title>
   <link rel="icon" href="favicon.ico" type="image/png">
-
   <style>
     body {
       font-family: Arial, sans-serif;
+      margin: 0;
       background: #f4f4f4;
-      padding: 50px;
+    }
+
+    header {
+      background-color: #00baff;
+      padding: 30px 20px;
+      color: white;
       text-align: center;
-    }
-    .container {
-      background: white;
-      padding: 30px;
-      border-radius: 10px;
-      max-width: 400px;
-      margin: auto;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-    }
-    input {
-      padding: 10px;
-      font-size: 16px;
-      width: 100%;
-      margin-bottom: 20px;
-    }
-    #strengthMessage {
+      font-size: 2.5rem;
       font-weight: bold;
     }
+
+    .container {
+      background: white;
+      max-width: 600px;
+      margin: 40px auto;
+      padding: 40px;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    input[type="password"] {
+      font-size: 20px;
+      padding: 10px;
+      width: 100%;
+      margin-bottom: 10px;
+    }
+
+    .strength-bar {
+      height: 50px;
+      line-height: 50px;
+      margin-bottom: 15px;
+      font-weight: bold;
+      color: white;
+      border-radius: 5px;
+    }
+
+    .very-weak {
+      background-color: #e60000;
+    }
+
     .weak {
-      color: red;
+      background-color: #ff6666;
     }
+
     .medium {
-      color: orange;
+      background-color: #ff9900;
     }
+
     .strong {
+      background-color: #66cc66;
+    }
+
+    .metrics {
+      font-size: 1rem;
+      margin: 20px 0;
+    }
+
+    .metrics span {
+      margin: 0 10px;
+      font-weight: bold;
+    }
+
+    .metrics .valid {
       color: green;
+    }
+
+    .metrics .invalid {
+      color: lightgray;
+    }
+
+    .review {
+      font-size: 1rem;
+      margin-top: 20px;
+    }
+
+    .crack-time {
+      font-size: 2rem;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+
+    .footer {
+      text-align: center;
+      font-size: 0.9rem;
+      color: #555;
+      margin-top: 40px;
     }
   </style>
 </head>
 <body>
+
+  <header>How Secure is Your Password?</header>
+
   <div class="container">
-    <h2>Password Strength Checker</h2>
-    <input type="password" id="passwordInput" placeholder="Enter your password" />
-    <div id="strengthMessage"></div>
+    <h2>Take the Password Test</h2>
+    <p><strong>Tip:</strong> It’s often better to have longer passwords than shorter, more complex ones</p>
+    <input type="password" id="passwordInput" placeholder="Enter your password">
+    <div class="strength-bar" id="strengthBar">Very Weak</div>
+
+    <div class="metrics">
+      <span id="lower" class="invalid">Lower case</span>
+      <span id="upper" class="invalid">Upper case</span>
+      <span id="number" class="invalid">Numbers</span>
+      <span id="symbol" class="invalid">Symbols</span>
+    </div>
+
+    <div>Time to crack your password:</div>
+    <div class="crack-time" id="crackTime">0.00 seconds</div>
+
+    <div class="review" id="reviewText">Review: Oh dear, using that password is like leaving your front door wide open.</div>
+  </div>
+
+  <div class="footer">
+    Your passwords are never stored. Even if they were, we have no idea who you are!
   </div>
 
   <script>
     const passwordInput = document.getElementById("passwordInput");
-    const strengthMessage = document.getElementById("strengthMessage");
+    const strengthBar = document.getElementById("strengthBar");
+    const crackTime = document.getElementById("crackTime");
+    const reviewText = document.getElementById("reviewText");
+    const lower = document.getElementById("lower");
+    const upper = document.getElementById("upper");
+    const number = document.getElementById("number");
+    const symbol = document.getElementById("symbol");
 
     passwordInput.addEventListener("input", function () {
       const password = passwordInput.value;
-      const strength = getPasswordStrength(password);
+      const length = password.length;
 
-      strengthMessage.textContent = strength.message;
-      strengthMessage.className = strength.class;
-    });
+      // Character checks
+      const hasLower = /[a-z]/.test(password);
+      const hasUpper = /[A-Z]/.test(password);
+      const hasNumber = /\d/.test(password);
+      const hasSymbol = /[^A-Za-z0-9]/.test(password);
 
-    function getPasswordStrength(password) {
+      // Update metrics UI
+      lower.className = hasLower ? "valid" : "invalid";
+      upper.className = hasUpper ? "valid" : "invalid";
+      number.className = hasNumber ? "valid" : "invalid";
+      symbol.className = hasSymbol ? "valid" : "invalid";
+
+      // Estimate crack time (simplified)
+      const charsetSize = (hasLower ? 26 : 0) +
+                          (hasUpper ? 26 : 0) +
+                          (hasNumber ? 10 : 0) +
+                          (hasSymbol ? 32 : 0);
+      const combinations = Math.pow(charsetSize, length);
+      const attemptsPerSecond = 1e9;
+      const timeToCrack = combinations / attemptsPerSecond;
+      const displayTime = timeToCrack < 1 ? `${timeToCrack.toFixed(2)} seconds` :
+                            timeToCrack < 60 ? `${Math.ceil(timeToCrack)} seconds` :
+                            timeToCrack < 3600 ? `${Math.ceil(timeToCrack / 60)} minutes` :
+                            timeToCrack < 86400 ? `${Math.ceil(timeToCrack / 3600)} hours` :
+                            timeToCrack < 31536000 ? `${Math.ceil(timeToCrack / 86400)} days` :
+                            `${Math.ceil(timeToCrack / 31536000)} years`;
+
+      crackTime.textContent = displayTime;
+
+      // Strength Rating
       let strength = 0;
+      if (length >= 8) strength++;
+      if (hasLower) strength++;
+      if (hasUpper) strength++;
+      if (hasNumber) strength++;
+      if (hasSymbol) strength++;
 
-      if (password.length >= 8) strength++;
-      if (/[A-Z]/.test(password)) strength++;
-      if (/[0-9]/.test(password)) strength++;
-      if (/[^A-Za-z0-9]/.test(password)) strength++;
-
-      if (password.length < 6) {
-        return { message: "Too Short", class: "weak" };
-      }
-
-      if (strength <= 2) {
-        return { message: "Weak", class: "weak" };
-      } else if (strength === 3) {
-        return { message: "Medium", class: "medium" };
+      if (length < 3) {
+        strengthBar.textContent = "Very Weak";
+        strengthBar.className = "strength-bar very-weak";
+        reviewText.textContent = "Review: Oh dear, using that password is like leaving your front door wide open.";
+      } else if (strength <= 2) {
+        strengthBar.textContent = "Weak";
+        strengthBar.className = "strength-bar weak";
+        reviewText.textContent = "Review: That password won't last long. Consider adding more variety.";
+      } else if (strength === 3 || strength === 4) {
+        strengthBar.textContent = "Medium";
+        strengthBar.className = "strength-bar medium";
+        reviewText.textContent = "Review: Not bad, but you could do better. Mix it up more.";
       } else {
-        return { message: "Strong", class: "strong" };
+        strengthBar.textContent = "Strong";
+        strengthBar.className = "strength-bar strong";
+        reviewText.textContent = "Review: Excellent! That password is tough to crack.";
       }
-    }
+    });
   </script>
 </body>
 </html>
