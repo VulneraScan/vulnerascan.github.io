@@ -3,38 +3,64 @@
 <head>
   <meta charset="UTF-8">
   <title>How Secure is Your Password?</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" href="favicon.ico" type="image/png">
   <style>
+    :root {
+      --bg: #f4f4f4;
+      --text: #000;
+      --card-bg: #fff;
+      --valid: green;
+      --invalid: #ccc;
+      --header-bg: #008000;
+      --footer: #555;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #121212;
+        --text: #f4f4f4;
+        --card-bg: #1e1e1e;
+        --valid: #00ff99;
+        --invalid: #444;
+        --header-bg: #007acc;
+        --footer: #aaa;
+      }
+    }
+
     body {
       font-family: Arial, sans-serif;
       margin: 0;
-      background: #f4f4f4;
+      background-color: var(--bg);
+      color: var(--text);
     }
 
     header {
-      background-color: #00baff;
+      background-color: var(--header-bg);
       padding: 30px 20px;
       color: white;
       text-align: center;
-      font-size: 2.5rem;
+      font-size: 2rem;
       font-weight: bold;
     }
 
     .container {
-      background: white;
+      background: var(--card-bg);
       max-width: 600px;
       margin: 40px auto;
-      padding: 40px;
+      padding: 30px;
       border-radius: 10px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
       text-align: center;
     }
 
     input[type="password"] {
-      font-size: 20px;
-      padding: 10px;
+      font-size: 18px;
+      padding: 12px;
       width: 100%;
-      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      margin-bottom: 15px;
     }
 
     .strength-bar {
@@ -46,38 +72,36 @@
       border-radius: 5px;
     }
 
-    .very-weak {
-      background-color: #e60000;
-    }
-
-    .weak {
-      background-color: #ff6666;
-    }
-
-    .medium {
-      background-color: #ff9900;
-    }
-
-    .strong {
-      background-color: #66cc66;
-    }
+    .very-weak { background-color: #e60000; }
+    .weak { background-color: #ff6666; }
+    .medium { background-color: #ff9900; }
+    .strong { background-color: #66cc66; }
 
     .metrics {
-      font-size: 1rem;
+      font-size: 0.95rem;
       margin: 20px 0;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
     }
 
     .metrics span {
-      margin: 0 10px;
       font-weight: bold;
     }
 
-    .metrics .valid {
-      color: green;
+    .valid {
+      color: var(--valid);
     }
 
-    .metrics .invalid {
-      color: lightgray;
+    .invalid {
+      color: var(--invalid);
+    }
+
+    .crack-time {
+      font-size: 1.8rem;
+      font-weight: bold;
+      margin-top: 10px;
     }
 
     .review {
@@ -85,17 +109,27 @@
       margin-top: 20px;
     }
 
-    .crack-time {
-      font-size: 2rem;
-      font-weight: bold;
-      margin-top: 10px;
-    }
-
     .footer {
       text-align: center;
-      font-size: 0.9rem;
-      color: #555;
-      margin-top: 40px;
+      font-size: 0.85rem;
+      color: var(--footer);
+      margin: 40px 20px;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 20px;
+        margin: 20px;
+      }
+
+      header {
+        font-size: 1.5rem;
+        padding: 20px 10px;
+      }
+
+      .crack-time {
+        font-size: 1.4rem;
+      }
     }
   </style>
 </head>
@@ -105,15 +139,15 @@
 
   <div class="container">
     <h2>Take the Password Test</h2>
-    <p><strong>Tip:</strong> It’s often better to have longer passwords than shorter, more complex ones</p>
+    <p><strong>Tip:</strong> Longer passwords are usually stronger.</p>
     <input type="password" id="passwordInput" placeholder="Enter your password">
     <div class="strength-bar" id="strengthBar">Very Weak</div>
 
     <div class="metrics">
-      <span id="lower" class="invalid">Lower case</span>
-      <span id="upper" class="invalid">Upper case</span>
-      <span id="number" class="invalid">Numbers</span>
-      <span id="symbol" class="invalid">Symbols</span>
+      <span id="lower" class="invalid">Lowercase</span>
+      <span id="upper" class="invalid">Uppercase</span>
+      <span id="number" class="invalid">Number</span>
+      <span id="symbol" class="invalid">Symbol</span>
     </div>
 
     <div>Time to crack your password:</div>
@@ -140,19 +174,16 @@
       const password = passwordInput.value;
       const length = password.length;
 
-      // Character checks
       const hasLower = /[a-z]/.test(password);
       const hasUpper = /[A-Z]/.test(password);
       const hasNumber = /\d/.test(password);
       const hasSymbol = /[^A-Za-z0-9]/.test(password);
 
-      // Update metrics UI
       lower.className = hasLower ? "valid" : "invalid";
       upper.className = hasUpper ? "valid" : "invalid";
       number.className = hasNumber ? "valid" : "invalid";
       symbol.className = hasSymbol ? "valid" : "invalid";
 
-      // Estimate crack time (simplified)
       const charsetSize = (hasLower ? 26 : 0) +
                           (hasUpper ? 26 : 0) +
                           (hasNumber ? 10 : 0) +
@@ -160,16 +191,16 @@
       const combinations = Math.pow(charsetSize, length);
       const attemptsPerSecond = 1e9;
       const timeToCrack = combinations / attemptsPerSecond;
+
       const displayTime = timeToCrack < 1 ? `${timeToCrack.toFixed(2)} seconds` :
-                            timeToCrack < 60 ? `${Math.ceil(timeToCrack)} seconds` :
-                            timeToCrack < 3600 ? `${Math.ceil(timeToCrack / 60)} minutes` :
-                            timeToCrack < 86400 ? `${Math.ceil(timeToCrack / 3600)} hours` :
-                            timeToCrack < 31536000 ? `${Math.ceil(timeToCrack / 86400)} days` :
-                            `${Math.ceil(timeToCrack / 31536000)} years`;
+                          timeToCrack < 60 ? `${Math.ceil(timeToCrack)} seconds` :
+                          timeToCrack < 3600 ? `${Math.ceil(timeToCrack / 60)} minutes` :
+                          timeToCrack < 86400 ? `${Math.ceil(timeToCrack / 3600)} hours` :
+                          timeToCrack < 31536000 ? `${Math.ceil(timeToCrack / 86400)} days` :
+                          `${Math.ceil(timeToCrack / 31536000)} years`;
 
       crackTime.textContent = displayTime;
 
-      // Strength Rating
       let strength = 0;
       if (length >= 8) strength++;
       if (hasLower) strength++;
