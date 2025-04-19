@@ -1,31 +1,33 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>How Secure is Your Password?</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="icon" href="favicon.ico" type="image/png">
-  <style>
+&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+  &lt;meta charset=&quot;UTF-8&quot;&gt;
+  &lt;title&gt;How Secure is Your Password?&lt;/title&gt;
+  &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
+  &lt;link rel=&quot;icon&quot; href=&quot;favicon.ico&quot; type=&quot;image/png&quot;&gt;
+  &lt;style&gt;
     :root {
       --bg: #f4f4f4;
       --text: #000;
       --card-bg: #fff;
       --valid: green;
       --invalid: #ccc;
-      --header-bg: #008000;
+      --header-bg: #00baff;
       --footer: #555;
+      --input-border: #ccc;
+      --placeholder: #999;
     }
 
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --bg: #121212;
-        --text: #f4f4f4;
-        --card-bg: #1e1e1e;
-        --valid: #00ff99;
-        --invalid: #444;
-        --header-bg: #007acc;
-        --footer: #aaa;
-      }
+    body.dark {
+      --bg: #121212;
+      --text: #f4f4f4;
+      --card-bg: #1e1e1e;
+      --valid: #00ff99;
+      --invalid: #444;
+      --header-bg: #007acc;
+      --footer: #aaa;
+      --input-border: #555;
+      --placeholder: #888;
     }
 
     body {
@@ -33,6 +35,7 @@
       margin: 0;
       background-color: var(--bg);
       color: var(--text);
+      transition: all 0.3s ease;
     }
 
     header {
@@ -42,6 +45,25 @@
       text-align: center;
       font-size: 2rem;
       font-weight: bold;
+      position: relative;
+    }
+
+    .dark-toggle {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: #fff;
+      color: #000;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    body.dark .dark-toggle {
+      background: #333;
+      color: #fff;
     }
 
     .container {
@@ -54,13 +76,22 @@
       text-align: center;
     }
 
-    input[type="password"] {
+    input[type=&quot;password&quot;] {
       font-size: 18px;
       padding: 12px;
-      width: 100%;
-      border: 1px solid #ccc;
+      width: calc(100% - 2px);
+      border: 1px solid var(--input-border);
       border-radius: 6px;
       margin-bottom: 15px;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+      background-color: var(--card-bg);
+      color: var(--text);
+    }
+
+    input::placeholder {
+      color: var(--placeholder);
     }
 
     .strength-bar {
@@ -130,47 +161,56 @@
       .crack-time {
         font-size: 1.4rem;
       }
+
+      .dark-toggle {
+        top: 15px;
+        right: 15px;
+        padding: 6px 10px;
+      }
     }
-  </style>
-</head>
-<body>
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;header&gt;
+    How Secure is Your Password?
+    &lt;button class=&quot;dark-toggle&quot; id=&quot;darkToggle&quot;&gt;🌙 Dark Mode&lt;/button&gt;
+  &lt;/header&gt;
 
-  <header>How Secure is Your Password?</header>
+  &lt;div class=&quot;container&quot;&gt;
+    &lt;h2&gt;Take the Password Test&lt;/h2&gt;
+    &lt;p&gt;&lt;strong&gt;Tip:&lt;/strong&gt; Longer passwords are usually stronger.&lt;/p&gt;
+    &lt;input type=&quot;password&quot; id=&quot;passwordInput&quot; placeholder=&quot;Enter your password&quot;&gt;
+    &lt;div class=&quot;strength-bar&quot; id=&quot;strengthBar&quot;&gt;Very Weak&lt;/div&gt;
 
-  <div class="container">
-    <h2>Take the Password Test</h2>
-    <p><strong>Tip:</strong> Longer passwords are usually stronger.</p>
-    <input type="password" id="passwordInput" placeholder="Enter your password">
-    <div class="strength-bar" id="strengthBar">Very Weak</div>
+    &lt;div class=&quot;metrics&quot;&gt;
+      &lt;span id=&quot;lower&quot; class=&quot;invalid&quot;&gt;Lowercase&lt;/span&gt;
+      &lt;span id=&quot;upper&quot; class=&quot;invalid&quot;&gt;Uppercase&lt;/span&gt;
+      &lt;span id=&quot;number&quot; class=&quot;invalid&quot;&gt;Number&lt;/span&gt;
+      &lt;span id=&quot;symbol&quot; class=&quot;invalid&quot;&gt;Symbol&lt;/span&gt;
+    &lt;/div&gt;
 
-    <div class="metrics">
-      <span id="lower" class="invalid">Lowercase</span>
-      <span id="upper" class="invalid">Uppercase</span>
-      <span id="number" class="invalid">Number</span>
-      <span id="symbol" class="invalid">Symbol</span>
-    </div>
+    &lt;div&gt;Time to crack your password:&lt;/div&gt;
+    &lt;div class=&quot;crack-time&quot; id=&quot;crackTime&quot;&gt;0.00 seconds&lt;/div&gt;
 
-    <div>Time to crack your password:</div>
-    <div class="crack-time" id="crackTime">0.00 seconds</div>
+    &lt;div class=&quot;review&quot; id=&quot;reviewText&quot;&gt;Review: Oh dear, using that password is like leaving your front door wide open.&lt;/div&gt;
+  &lt;/div&gt;
 
-    <div class="review" id="reviewText">Review: Oh dear, using that password is like leaving your front door wide open.</div>
-  </div>
-
-  <div class="footer">
+  &lt;div class=&quot;footer&quot;&gt;
     Your passwords are never stored. Even if they were, we have no idea who you are!
-  </div>
+  &lt;/div&gt;
 
-  <script>
-    const passwordInput = document.getElementById("passwordInput");
-    const strengthBar = document.getElementById("strengthBar");
-    const crackTime = document.getElementById("crackTime");
-    const reviewText = document.getElementById("reviewText");
-    const lower = document.getElementById("lower");
-    const upper = document.getElementById("upper");
-    const number = document.getElementById("number");
-    const symbol = document.getElementById("symbol");
+  &lt;script&gt;
+    const passwordInput = document.getElementById(&quot;passwordInput&quot;);
+    const strengthBar = document.getElementById(&quot;strengthBar&quot;);
+    const crackTime = document.getElementById(&quot;crackTime&quot;);
+    const reviewText = document.getElementById(&quot;reviewText&quot;);
+    const lower = document.getElementById(&quot;lower&quot;);
+    const upper = document.getElementById(&quot;upper&quot;);
+    const number = document.getElementById(&quot;number&quot;);
+    const symbol = document.getElementById(&quot;symbol&quot;);
+    const toggleBtn = document.getElementById(&quot;darkToggle&quot;);
 
-    passwordInput.addEventListener("input", function () {
+    passwordInput.addEventListener(&quot;input&quot;, () =&gt; {
       const password = passwordInput.value;
       const length = password.length;
 
@@ -179,10 +219,10 @@
       const hasNumber = /\d/.test(password);
       const hasSymbol = /[^A-Za-z0-9]/.test(password);
 
-      lower.className = hasLower ? "valid" : "invalid";
-      upper.className = hasUpper ? "valid" : "invalid";
-      number.className = hasNumber ? "valid" : "invalid";
-      symbol.className = hasSymbol ? "valid" : "invalid";
+      lower.className = hasLower ? &quot;valid&quot; : &quot;invalid&quot;;
+      upper.className = hasUpper ? &quot;valid&quot; : &quot;invalid&quot;;
+      number.className = hasNumber ? &quot;valid&quot; : &quot;invalid&quot;;
+      symbol.className = hasSymbol ? &quot;valid&quot; : &quot;invalid&quot;;
 
       const charsetSize = (hasLower ? 26 : 0) +
                           (hasUpper ? 26 : 0) +
@@ -192,40 +232,58 @@
       const attemptsPerSecond = 1e9;
       const timeToCrack = combinations / attemptsPerSecond;
 
-      const displayTime = timeToCrack < 1 ? `${timeToCrack.toFixed(2)} seconds` :
-                          timeToCrack < 60 ? `${Math.ceil(timeToCrack)} seconds` :
-                          timeToCrack < 3600 ? `${Math.ceil(timeToCrack / 60)} minutes` :
-                          timeToCrack < 86400 ? `${Math.ceil(timeToCrack / 3600)} hours` :
-                          timeToCrack < 31536000 ? `${Math.ceil(timeToCrack / 86400)} days` :
+      const displayTime = timeToCrack &lt; 1 ? `${timeToCrack.toFixed(2)} seconds` :
+                          timeToCrack &lt; 60 ? `${Math.ceil(timeToCrack)} seconds` :
+                          timeToCrack &lt; 3600 ? `${Math.ceil(timeToCrack / 60)} minutes` :
+                          timeToCrack &lt; 86400 ? `${Math.ceil(timeToCrack / 3600)} hours` :
+                          timeToCrack &lt; 31536000 ? `${Math.ceil(timeToCrack / 86400)} days` :
                           `${Math.ceil(timeToCrack / 31536000)} years`;
 
       crackTime.textContent = displayTime;
 
       let strength = 0;
-      if (length >= 8) strength++;
+      if (length &gt;= 8) strength++;
       if (hasLower) strength++;
       if (hasUpper) strength++;
       if (hasNumber) strength++;
       if (hasSymbol) strength++;
 
-      if (length < 3) {
-        strengthBar.textContent = "Very Weak";
-        strengthBar.className = "strength-bar very-weak";
-        reviewText.textContent = "Review: Oh dear, using that password is like leaving your front door wide open.";
-      } else if (strength <= 2) {
-        strengthBar.textContent = "Weak";
-        strengthBar.className = "strength-bar weak";
-        reviewText.textContent = "Review: That password won't last long. Consider adding more variety.";
+      if (length &lt; 3) {
+        strengthBar.textContent = &quot;Very Weak&quot;;
+        strengthBar.className = &quot;strength-bar very-weak&quot;;
+        reviewText.textContent = &quot;Review: Oh dear, using that password is like leaving your front door wide open.&quot;;
+      } else if (strength &lt;= 2) {
+        strengthBar.textContent = &quot;Weak&quot;;
+        strengthBar.className = &quot;strength-bar weak&quot;;
+        reviewText.textContent = &quot;Review: That password won't last long. Consider adding more variety.&quot;;
       } else if (strength === 3 || strength === 4) {
-        strengthBar.textContent = "Medium";
-        strengthBar.className = "strength-bar medium";
-        reviewText.textContent = "Review: Not bad, but you could do better. Mix it up more.";
+        strengthBar.textContent = &quot;Medium&quot;;
+        strengthBar.className = &quot;strength-bar medium&quot;;
+        reviewText.textContent = &quot;Review: Not bad, but you could do better. Mix it up more.&quot;;
       } else {
-        strengthBar.textContent = "Strong";
-        strengthBar.className = "strength-bar strong";
-        reviewText.textContent = "Review: Excellent! That password is tough to crack.";
+        strengthBar.textContent = &quot;Strong&quot;;
+        strengthBar.className = &quot;strength-bar strong&quot;;
+        reviewText.textContent = &quot;Review: Excellent! That password is tough to crack.&quot;;
       }
     });
-  </script>
-</body>
-</html>
+
+    function applyTheme(theme) {
+      document.body.classList.toggle(&quot;dark&quot;, theme === &quot;dark&quot;);
+      toggleBtn.textContent = theme === &quot;dark&quot; ? &quot;☀️ Light Mode&quot; : &quot;🌙 Dark Mode&quot;;
+      localStorage.setItem(&quot;theme&quot;, theme);
+    }
+
+    toggleBtn.addEventListener(&quot;click&quot;, () =&gt; {
+      const isDark = document.body.classList.contains(&quot;dark&quot;);
+      applyTheme(isDark ? &quot;light&quot; : &quot;dark&quot;);
+    });
+
+    const savedTheme = localStorage.getItem(&quot;theme&quot;);
+    if (savedTheme) {
+      applyTheme(savedTheme);
+    } else if (window.matchMedia(&quot;(prefers-color-scheme: dark)&quot;).matches) {
+      applyTheme(&quot;dark&quot;);
+    }
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
