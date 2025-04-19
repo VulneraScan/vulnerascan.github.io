@@ -51,7 +51,7 @@
       align-items: center;
     }
 
-    .dark-toggle {
+    .dark-toggle, .user-count {
       background: #fff;
       color: #000;
       border: none;
@@ -59,12 +59,22 @@
       border-radius: 6px;
       font-weight: bold;
       cursor: pointer;
-      margin-top: 10px;
     }
 
-    body.dark .dark-toggle {
+    .user-count {
+      cursor: default;
+    }
+
+    body.dark .dark-toggle,
+    body.dark .user-count {
       background: #333;
       color: #fff;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
     }
 
     .container {
@@ -155,8 +165,9 @@
         font-size: 1.4rem;
       }
 
-      .dark-toggle {
-        margin-top: 12px;
+      .button-group {
+        flex-direction: column;
+        align-items: center;
       }
     }
   </style>
@@ -164,13 +175,16 @@
 <body>
   <header>
     How Secure is Your Password?
-    <button class="dark-toggle" id="darkToggle">🌙 Dark Mode</button>
+    <div class="button-group">
+      <button class="dark-toggle" id="darkToggle">🌙 Dark Mode</button>
+      <button class="user-count" id="userCountBtn">👤 Users: <span id="userCount">...</span></button>
+    </div>
   </header>
 
   <div class="container">
     <h2>Take the Password Test</h2>
     <p><strong>Tip:</strong> Longer passwords are usually stronger.</p>
-    <input type="password" id="passwordInput" placeholder="&#x45;&#x6E;&#x74;&#x65;&#x72;&#x20;&#x79;&#x6F;&#x75;&#x72;&#x20;&#x70;&#x61;&#x73;&#x73;&#x77;&#x6F;&#x72;&#x64;">
+    <input type="password" id="passwordInput" placeholder="Enter your password">
     <div class="strength-bar" id="strengthBar">Very Weak</div>
 
     <div class="metrics">
@@ -200,6 +214,7 @@
     const number = document.getElementById("number");
     const symbol = document.getElementById("symbol");
     const toggleBtn = document.getElementById("darkToggle");
+    const userCount = document.getElementById("userCount");
 
     passwordInput.addEventListener("input", () => {
       const password = passwordInput.value;
@@ -277,6 +292,9 @@
     } else if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
       applyTheme("dark");
     }
+
+    // Simulate visitor count
+    userCount.textContent = Math.floor(Math.random() * 10000 + 1000);
   </script>
 </body>
 </html>
