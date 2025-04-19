@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>How Secure is Your Password?</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="icon" href="favicon.ico" type="image/png">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Password Strength Checker</title>
+  <link rel="icon" href="favicon.ico" type="image/png" />
   <style>
     :root {
       --bg: #f4f4f4;
@@ -51,7 +51,16 @@
       align-items: center;
     }
 
-    .dark-toggle, .user-count {
+    .button-group {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 10px;
+    }
+
+    .dark-toggle,
+    .user-count {
       background: #fff;
       color: #000;
       border: none;
@@ -61,20 +70,10 @@
       cursor: pointer;
     }
 
-    .user-count {
-      cursor: default;
-    }
-
     body.dark .dark-toggle,
     body.dark .user-count {
       background: #333;
       color: #fff;
-    }
-
-    .button-group {
-      display: flex;
-      gap: 10px;
-      margin-top: 10px;
     }
 
     .container {
@@ -94,7 +93,6 @@
       border: 1px solid #ccc;
       border-radius: 6px;
       margin-bottom: 15px;
-      box-sizing: border-box;
     }
 
     .strength-bar {
@@ -124,13 +122,8 @@
       font-weight: bold;
     }
 
-    .valid {
-      color: var(--valid);
-    }
-
-    .invalid {
-      color: var(--invalid);
-    }
+    .valid { color: var(--valid); }
+    .invalid { color: var(--invalid); }
 
     .crack-time {
       font-size: 1.8rem;
@@ -151,24 +144,9 @@
     }
 
     @media (max-width: 600px) {
-      .container {
-        padding: 20px;
-        margin: 20px;
-      }
-
-      header {
-        font-size: 1.5rem;
-        padding: 20px 10px 10px;
-      }
-
-      .crack-time {
-        font-size: 1.4rem;
-      }
-
-      .button-group {
-        flex-direction: column;
-        align-items: center;
-      }
+      .container { padding: 20px; margin: 20px; }
+      header { font-size: 1.5rem; padding: 20px 10px 10px; }
+      .crack-time { font-size: 1.4rem; }
     }
   </style>
 </head>
@@ -177,14 +155,14 @@
     How Secure is Your Password?
     <div class="button-group">
       <button class="dark-toggle" id="darkToggle">🌙 Dark Mode</button>
-      <button class="user-count" id="userCountBtn">👤 Users: <span id="userCount">...</span></button>
+      <button class="user-count">👥 Visitors: <span id="userCount">0</span></button>
     </div>
   </header>
 
   <div class="container">
     <h2>Take the Password Test</h2>
     <p><strong>Tip:</strong> Longer passwords are usually stronger.</p>
-    <input type="password" id="passwordInput" placeholder="Enter your password">
+    <input type="password" id="passwordInput" placeholder="Enter your password" />
     <div class="strength-bar" id="strengthBar">Very Weak</div>
 
     <div class="metrics">
@@ -197,14 +175,47 @@
     <div>Time to crack your password:</div>
     <div class="crack-time" id="crackTime">0.00 seconds</div>
 
-    <div class="review" id="reviewText">Review: Oh dear, using that password is like leaving your front door wide open.</div>
+    <div class="review" id="reviewText">
+      Review: Oh dear, using that password is like leaving your front door wide open.
+    </div>
   </div>
 
   <div class="footer">
     Your passwords are never stored. Even if they were, we have no idea who you are!
   </div>
 
-  <script>
+  <!-- Script -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+    import { getFirestore, doc, onSnapshot, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT_ID.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const counterRef = doc(db, "meta", "userCount");
+
+    onSnapshot(counterRef, (doc) => {
+      if (doc.exists()) {
+        document.getElementById("userCount").textContent = doc.data().count;
+      }
+    });
+
+    window.addEventListener("load", async () => {
+      try {
+        await updateDoc(counterRef, { count: increment(1) });
+      } catch (error) {
+        console.error("Error updating user count:", error);
+      }
+    });
+
     const passwordInput = document.getElementById("passwordInput");
     const strengthBar = document.getElementById("strengthBar");
     const crackTime = document.getElementById("crackTime");
@@ -214,7 +225,6 @@
     const number = document.getElementById("number");
     const symbol = document.getElementById("symbol");
     const toggleBtn = document.getElementById("darkToggle");
-    const userCount = document.getElementById("userCount");
 
     passwordInput.addEventListener("input", () => {
       const password = passwordInput.value;
@@ -273,7 +283,6 @@
       }
     });
 
-    // Dark mode toggle
     function applyTheme(theme) {
       document.body.classList.toggle("dark", theme === "dark");
       toggleBtn.textContent = theme === "dark" ? "☀️ Light Mode" : "🌙 Dark Mode";
@@ -285,16 +294,12 @@
       applyTheme(isDark ? "light" : "dark");
     });
 
-    // Load saved preference or system default
     const savedTheme = localStorage.getItem("theme");
     if (savedTheme) {
       applyTheme(savedTheme);
     } else if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
       applyTheme("dark");
     }
-
-    // Simulate visitor count
-    userCount.textContent = Math.floor(Math.random() * 10000 + 1000);
   </script>
 </body>
 </html>
