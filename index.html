@@ -26,6 +26,10 @@
       --footer: #aaa;
     }
 
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       font-family: Arial, sans-serif;
       margin: 0;
@@ -36,18 +40,18 @@
 
     header {
       background-color: var(--header-bg);
-      padding: 30px 20px;
+      padding: 30px 20px 20px;
       color: white;
       text-align: center;
       font-size: 2rem;
       font-weight: bold;
       position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
 
     .dark-toggle {
-      position: absolute;
-      top: 20px;
-      right: 20px;
       background: #fff;
       color: #000;
       border: none;
@@ -55,6 +59,7 @@
       border-radius: 6px;
       font-weight: bold;
       cursor: pointer;
+      margin-top: 10px;
     }
 
     body.dark .dark-toggle {
@@ -79,6 +84,7 @@
       border: 1px solid #ccc;
       border-radius: 6px;
       margin-bottom: 15px;
+      box-sizing: border-box;
     }
 
     .strength-bar {
@@ -142,7 +148,7 @@
 
       header {
         font-size: 1.5rem;
-        padding: 20px 10px;
+        padding: 20px 10px 10px;
       }
 
       .crack-time {
@@ -150,9 +156,7 @@
       }
 
       .dark-toggle {
-        top: 15px;
-        right: 15px;
-        padding: 6px 10px;
+        margin-top: 12px;
       }
     }
   </style>
@@ -166,7 +170,7 @@
   <div class="container">
     <h2>Take the Password Test</h2>
     <p><strong>Tip:</strong> Longer passwords are usually stronger.</p>
-    <input type="password" id="passwordInput" placeholder="Enter your password">
+    <input type="password" id="passwordInput" placeholder="&#x45;&#x6E;&#x74;&#x65;&#x72;&#x20;&#x79;&#x6F;&#x75;&#x72;&#x20;&#x70;&#x61;&#x73;&#x73;&#x77;&#x6F;&#x72;&#x64;">
     <div class="strength-bar" id="strengthBar">Very Weak</div>
 
     <div class="metrics">
