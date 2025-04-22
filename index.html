@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Password Strength Checker</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" href="favicon.ico" type="image/png" />
+</head>
+<body>
+  <header>
+    How Secure is Your Password?
+    <div class="button-group">
+      <button class="dark-toggle" id="darkToggle">🌙 Dark Mode</button>
+      <button class="user-count">👥 Visitors: <span id="userCount">0</span></button>
+    </div>
+  </header>
+
+  <div class="container">
+    <h2>Take the Password Test</h2>
+    <p><strong>Tip:</strong> Longer passwords are usually stronger.</p>
+    <input type="password" id="passwordInput" placeholder="Enter your password" />
+    <div class="strength-bar" id="strengthBar">Very Weak</div>
+
+    <div class="metrics">
+      <span id="lower" class="invalid">Lowercase</span>
+      <span id="upper" class="invalid">Uppercase</span>
+      <span id="number" class="invalid">Number</span>
+      <span id="symbol" class="invalid">Symbol</span>
+    </div>
+
+    <div>Time to crack your password:</div>
+    <div class="crack-time" id="crackTime">0.00 seconds</div>
+
+    <div class="review" id="reviewText">
+      Review: Oh dear, using that password is like leaving your front door wide open.
+    </div>
+  </div>
+
+  <div class="footer">
+    Your passwords are never stored. Even if they were, we have no idea who you are!
+  </div>
+
+  <script type="module" src="script.js"></script>
+</body>
+</html>
